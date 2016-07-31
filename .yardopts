@@ -1,0 +1,1 @@
+--exclude 'job_dollars/lib/core_ext/*' job_dollars/**/*
