@@ -47,7 +47,7 @@ include JobDollars
 
 The data format is a bit tricky because I have not automated the process yet. All of my data comes from [Indeed.com](www.indeed.com).
 
-Here are the steps you need to follow if you want to compute job-dollars for a technology not already in the [job_dollars.yml](https://github.com/tb0yd/job_dollars/blob/master/lib/job_dollars/job_dollars.yml) file:
+Here are the steps you need to follow if you want to compute job-dollars for a technology not already in the [job_dollars.yml](https://github.com/tb0yd/job_dollars/blob/master/lib/job_dollars.yml) file:
 
 1. Create a new section for your technology in job_dollars.yml.
 2. Do the job search and resume search for your technology on [Indeed.com](www.indeed.com).
