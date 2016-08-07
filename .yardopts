@@ -1,1 +1,1 @@
---exclude 'job_dollars/lib/core_ext/*' job_dollars/**/*
+--exclude 'lib/job_dollars/core_ext/*' lib/**/*

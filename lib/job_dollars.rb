@@ -1,6 +1,6 @@
-require File.join(File.dirname(__FILE__), './lib/core_ext/hash.rb')
-require File.join(File.dirname(__FILE__), './lib/core_ext/hash_with_indifferent_access.rb')
-require File.join(File.dirname(__FILE__), './lib/estimator.rb')
+require File.join(File.dirname(__FILE__), './job_dollars/core_ext/hash.rb')
+require File.join(File.dirname(__FILE__), './job_dollars/core_ext/hash_with_indifferent_access.rb')
+require File.join(File.dirname(__FILE__), './job_dollars/estimator.rb')
 
 require 'yaml'
 
