@@ -95,6 +95,20 @@ module JobDollars
       salaries.inject(&:+) / total
     end
 
+    NORMAL_DISTRIBUTION = {
+      1 => [1.0],
+      2 => [0.5,0.5],
+      3 => [0.0918,0.82,0.0918],
+      4 => [0.0228,0.48,0.48,0.0228],
+      5 => [0.0082,0.21,0.58,0.21,0.0082],
+      6 => [0.0038,0.09,0.41,0.41,0.09,0.0038],
+      7 => [0.0021,0.04,0.24,0.43,0.24,0.04,0.0021],
+      8 => [0.0013,0.02,0.14,0.34,0.34,0.14,0.02,0.0013],
+      9 => [0.0009,0.01,0.09,0.24,0.34,0.24,0.09,0.01,0.0009],
+      10 => [0.0007,0.01,0.04,0.16,0.29,0.29,0.16,0.04,0.01,0.0007],
+      11 => [0.0005,0.01,0.03,0.1,0.22,0.28,0.22,0.1,0.03,0.01,0.0005]
+    }
+
     # Given the total number of resumes, model the probability
     # distribution that various numbers of resumes will be selected.
     #
@@ -102,10 +116,10 @@ module JobDollars
     # @return (Hash<Fixnum, Float>) Probabilities keyed to the number
     #         of resumes selected.
     def applicants_per_job_distribution(total_resumes)
-      max = (Math.log(total_resumes) / 2).to_i + 1
+      max = (Math.log(total_resumes) / 1.5).to_i + 1
 
       dist = (1..max).to_a.map do |num|
-        [num, (1.0/max)]
+        [num, NORMAL_DISTRIBUTION[max][num-1]]
       end
 
       Hash[dist]

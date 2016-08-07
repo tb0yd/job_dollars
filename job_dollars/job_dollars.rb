@@ -16,13 +16,15 @@ require 'yaml'
 #   irb(main):006:0> beginner_javagrad_rating(JOB_DATA['java-android'])
 #   => 17.541885876163494
 module JobDollars
+  DATA_YML_FILE = File.join(File.dirname(__FILE__), './job_dollars.yml')
+
   extend Estimator
 
   def self.included(base)
     base.include Estimator
   end
 
-  JOB_DATA = YAML.load(File.read('langval.yml'))
+  JOB_DATA = YAML.load(File.read(DATA_YML_FILE))
   JAVAGRAD_IN_JOB_DOLLARS = market_work_in_job_dollars(0.0, JOB_DATA["java-swing"])
 end
 
