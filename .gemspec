@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'job_dollars'
-  s.version     = '0.1'
+  s.version     = '1.0'
   s.licenses    = ['MIT']
   s.summary     = "An economic measure of the value of a programming language and framework."
   s.description = "A job dollar is an objective measure of the strength of the job market for entry-level workers using a given programming language and framework. It is a composite measure of work, like kilowatt-hours or Joules, and it measures how much work the market has done for you."
