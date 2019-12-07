@@ -81,7 +81,11 @@ module JobDollars
     # @param  total (Fixnum) total number of results
     # @return (Float) Average salary in dollars
     def average_salary_from_indeed_facets(salatext, total)
-      salaries = salatext.lstrip.strip.split(/\s+/).in_groups_of(2).map { |r| r.map { |i| i.gsub(/\D/, '').to_f }}
+      salaries = salatext.lstrip.strip.split(/[\s\u00a0]+/).in_groups_of(2).map do |r|
+        r.compact.map do |i|
+          i.gsub(/\D/, '').to_f
+        end
+      end
 
       salaries = [[salaries[0][0], total.to_f]] + salaries
 

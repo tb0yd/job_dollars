@@ -26,11 +26,32 @@ module JobDollars
   end
 
   JOB_DATA = YAML.load(File.read(DATA_YML_FILE))
-  JAVAGRAD_IN_JOB_DOLLARS = market_work_in_job_dollars(0.0, JOB_DATA["java-swing"])
+  # JAVAGRAD_IN_JOB_DOLLARS = market_work_in_job_dollars(0.0, JOB_DATA["java-swing"])
+
+  def job_dollar_output
+    str = 'stack,senior,mid,expert jr,junior' + "\n"
+
+    sorted_job_data = JOB_DATA.each_pair.sort { |k, v| k[1]["resumes"].to_i <=> v[1]["resumes"].to_i }
+    sorted_job_data.each do |k, v|
+      next unless ["senior", "mid", "entry"].all? { |g| v["salaries"].has_key?(g) }
+      str += "#{k},#{[0, 2.0, 4.0, 7.5].reverse.map { |n| (market_work_in_job_dollars(n, v).to_f / 1000).to_s }.join(",")}"
+      str += "\n"
+    end
+
+    str
+  end
 
   def job_dollar_summary
-    ('%-20.20s' % 'stack') + ('%15.15s' % 'senior') + ('%15.15s' % 'mid') + ('%15.15s' % 'expert jr') + ('%15.15s' % 'junior') + "\n" +
-      JOB_DATA.each_pair.sort { |k, v| k[1]["resumes"].to_i <=> v[1]["resumes"].to_i }.map { |k, v| ('%-20.20s' % k) + [0, 2.0, 4.0, 7.5].reverse.map { |n| '%15.2fk' % (market_work_in_job_dollars(n, v).to_f / 1000) }.join("") }.join("\n")
+    str = ('%-20.20s' % 'stack') + ('%15.15s' % 'senior') + ('%15.15s' % 'mid') + ('%15.15s' % 'expert jr') + ('%15.15s' % 'junior') + "\n"
+
+    sorted_job_data = JOB_DATA.each_pair.sort { |k, v| k[1]["resumes"].to_i <=> v[1]["resumes"].to_i }
+    sorted_job_data.each do |k, v|
+      next unless ["senior", "mid", "entry"].all? { |g| v["salaries"].has_key?(g) }
+      str += ('%-20.20s' % k) + [0, 2.0, 4.0, 7.5].reverse.map { |n| '%15.2fk' % (market_work_in_job_dollars(n, v).to_f / 1000) }.join("")
+      str += "\n"
+    end
+
+    str
   end
 end
 

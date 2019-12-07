@@ -10,7 +10,7 @@ module JobDollars
     end
 
     def parse_job_col(job_col)
-      job_col.match(/\d+/)[1].to_i
+      job_col.match(/\d+/)[0].to_i
     end
 
     def parse_resume_col(resume_col)
