@@ -1,0 +1,43 @@
+Language,Planning,Design,Development,Testing,Maintenance,Agile
+iOS,3,3,7,4,1,5
+Objective-C,3,3,7,4,1,5
+JavaScript,3,3,7,4,1,5
+PHP,3,3,7,4,1,5
+SQL,3,3,7,4,1,5
+WordPress,3,3,7,4,1,5
+Android,3,3,7,4,1,5
+Cordova,3,3,7,4,1,5
+MongoDB,3,3,7,4,1,5
+C#,4,4,9,5,2,6
+Dart,3,3,8,5,2,6
+Java,4,4,9,6,2,6
+LAMP,3,3,7,4,1,5
+SQL Server,4,4,9,5,2,6
+Visual Basic,3,3,7,4,1,5
+C++,4,4,9,5,2,6
+Cloud,3,3,8,5,2,5
+Python,3,3,7,4,1,5
+C,3,3,7,4,1,5
+AngularJS,4,4,9,5,2,6
+Spark,4,4,10,6,2,7
+Go,4,4,10,6,2,6
+Haskell,4,4,9,5,2,6
+Node.js,3,3,7,4,1,5
+Redis,3,3,8,5,2,5
+Ruby,3,3,7,4,1,5
+ReactJS,4,4,9,5,2,6
+Arduino / Raspberry Pi,3,3,7,4,1,5
+Swift,3,3,7,4,1,5
+Perl,4,4,10,6,2,6
+Cassandra,4,4,10,6,2,7
+Salesforce,4,4,10,6,2,7
+Scala,4,4,10,6,2,7
+CoffeeScript,3,3,7,4,1,5
+Windows Phone,3,3,8,5,2,5
+Hadoop,4,4,10,6,2,7
+SharePoint,4,4,9,5,2,6
+R,4,4,9,5,2,6
+Clojure,4,4,9,6,2,6
+Rust,4,4,9,5,2,6
+Matlab,3,3,7,4,1,5
+F#,4,4,10,6,2,6

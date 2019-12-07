@@ -10,6 +10,7 @@ module JobDollars
     #         shaped like the top-level values in langval.yml
     # @return (Float) Value of resume item in dollars.
     def value_of_resume_item_in_dollars(y, hash)
+      hash = hash.with_indifferent_access
       resu = hash[:resumes]
       sala = crunch_salaries(hash)
 
@@ -32,6 +33,7 @@ module JobDollars
     #         shaped like the top-level values in langval.yml
     # @return (Float) Market work estimate in job-dollars.
     def market_work_in_job_dollars(y, hash)
+      hash = hash.with_indifferent_access
       candidate_type = case
                        when y >= 5
                          :senior
@@ -42,6 +44,9 @@ module JobDollars
                        end
 
       value_of_resume_item_in_dollars(y, hash) * hash[:jobs][candidate_type]
+
+    rescue TypeError # TODO: fix missing data -TB
+      nil
     end
 
     # Estimate the work the job market does for a candidate with a certain
@@ -53,6 +58,8 @@ module JobDollars
     # @return (Float) Market work estimate in Javagrads.
     def market_work_in_javagrads(y, hash)
       market_work_in_job_dollars(y, hash) / JAVAGRAD_IN_JOB_DOLLARS
+    rescue TypeError # TODO: fix missing data -TB
+      nil
     end
 
     # Calculate the number of Javagrads of work the job market does for beginners
@@ -63,6 +70,8 @@ module JobDollars
     # @return (Float) Beginner rating in Javagrads.
     def beginner_javagrad_rating(hash)
       market_work_in_javagrads(0.0, hash)
+    rescue TypeError # TODO: fix missing data -TB
+      nil
     end
 
     # Get the average salary for jobs returned from an Indeed.com search,
@@ -72,7 +81,7 @@ module JobDollars
     # @param  total (Fixnum) total number of results
     # @return (Float) Average salary in dollars
     def average_salary_from_indeed_facets(salatext, total)
-      salaries = salatext.split(/\s+/).in_groups_of(2).map { |r| r.map { |i| i.gsub(/\D/, '').to_f }}
+      salaries = salatext.lstrip.strip.split(/\s+/).in_groups_of(2).map { |r| r.map { |i| i.gsub(/\D/, '').to_f }}
 
       salaries = [[salaries[0][0], total.to_f]] + salaries
 
