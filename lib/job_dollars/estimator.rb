@@ -1,4 +1,5 @@
 require File.join(File.dirname(__FILE__), './core_ext/array.rb')
+require 'rubystats'
 
 module JobDollars
   # This module contains the estimation code.
@@ -25,6 +26,27 @@ module JobDollars
        (chance[:senior] * sala[:senior])) / 3.0
     end
 
+    # Estimate the available earnable dollars by a candidate with a given skill,
+    # years of experience and the job market they are facing, in one year.
+    #
+    # @param  y (Fixnum) number of years
+    # @param  hash (HashWithIndifferentAccess) job data for the chosen skill,
+    #         shaped like the top-level values in langval.yml
+    # @return (Float) Available earnable dollars in job-dollars.
+    def available_earnable_dollars(y, hash)
+      hash = hash.with_indifferent_access
+
+      resu = hash[:resumes]
+      sala = crunch_salaries(hash)
+
+      ((chance_of_getting_job(y, resu, :entry) * sala[:entry] * hash[:jobs][:entry]) +
+       (chance_of_getting_job(y, resu, :mid) * sala[:mid] * hash[:jobs][:mid]) +
+       (chance_of_getting_job(y, resu, :senior) * sala[:senior] * hash[:jobs][:senior]))
+
+    rescue TypeError # TODO: fix missing data -TB
+      nil
+    end
+
     # Estimate the work the job market does for a candidate with a certain
     # number of years of experience in a given skill.
     #
@@ -37,9 +59,9 @@ module JobDollars
       candidate_type = case
                        when y >= 5
                          :senior
-                       when y >= 3 && y < 5
+                       when y >= 2 && y < 5
                          :mid
-                       when y < 3
+                       when y < 2
                          :entry
                        end
 
@@ -108,6 +130,17 @@ module JobDollars
       salaries.inject(&:+) / total
     end
 
+    def probability_of_resume_pool_size(available, pool_size)
+      midpoint = ((available.to_f + 1.0) / 2.0)
+      stddev = (available.to_f / 7.1)
+      gen = Rubystats::NormalDistribution.new(midpoint, stddev)
+
+      return 1.0 if available == 1
+      return 0.5 if available == 2
+
+      gen.send(:get_pdf, pool_size)
+    end
+
     NORMAL_DISTRIBUTION = {
       1 => [1.0],
       2 => [0.5,0.5],
@@ -129,34 +162,41 @@ module JobDollars
     # @return (Hash<Fixnum, Float>) Probabilities keyed to the number
     #         of resumes selected.
     def applicants_per_job_distribution(total_resumes)
-      max = (Math.log(total_resumes) / 1.5).to_i + 1
+      max = (Math.log(total_resumes) / 1.5) + 1
 
       dist = (1..max).to_a.map do |num|
-        [num, NORMAL_DISTRIBUTION[max][num-1]]
+        [num, probability_of_resume_pool_size(max, num)]
       end
 
       Hash[dist]
     end
 
-    # Compute the chance a candidate will get a job, given the years
-    # of experience, total number of resumes, and the candidate type
+    # Compute the chance a candidate will be selected for a particular job,
+    # given the years of experience, total number of resumes, and the candidate type
     #
     # @param  years (Float) candidate years of experience
     # @param  total_resumes (Fixnum) total resumes
     # @param  type (Symbol) in [:entry, :mid, :senior]
     # @return (Float) Chance the candidate will get a job
     def chance_of_getting_job(years, total_resumes, type = :senior)
+      return 1.0 if total_resumes.to_f == 0.0
+
       year_range = case
                    when type == :senior
-                     [5.0, 10.0]
+                     [5.0, 20.0]
                    when type == :mid
-                     [3.0, 5.0]
+                     [2.0, 10.0]
                    when type == :entry
                      [0.0, 3.0]
                    end
 
-      strength = [((years.to_f - year_range[0]) / (year_range[1] - year_range[0])), 1.0].min
+      # relative strength compared to other job seekers for a job of that type
+      strength = (years.to_f - year_range[0]) / (year_range[1] - year_range[0])
 
+      # take overqualification into account
+      strength = 1 - (strength - 1).abs
+
+      # negative strength == no strength
       return 0.0 if strength < 0
 
       dist = applicants_per_job_distribution(total_resumes)
@@ -167,7 +207,7 @@ module JobDollars
         c * (strength ** other_resumes)
       end
 
-      dist.inject(&:+)
+      [dist.inject(&:+), 1.0].min
     end
 
     # Get the salary distribution for a skill.

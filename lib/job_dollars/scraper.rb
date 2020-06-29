@@ -20,7 +20,7 @@ module JobDollars
     def scraper_output_to_yaml
       yaml = {}
 
-      csv = CSV.parse(File.read("../data/masterlist.csv"), headers: true)
+      csv = CSV.parse(File.read("../data/masterlist-consolidated.csv"), headers: true)
       csv.each do |row|
         if row["job search"] != ""
           uri = URI(row["job search"])

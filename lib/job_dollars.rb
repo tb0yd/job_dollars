@@ -21,6 +21,7 @@ require 'csv'
 module JobDollars
   DATA_YML_FILE = File.join(File.dirname(__FILE__), '../data/job_dollars3.yml')
   TEAM_DATA_CSV_FILE = File.join(File.dirname(__FILE__), '../data/typical-sizes.csv')
+  MEDIAN_WAGE = 48672
 
   extend Estimator
 
@@ -34,12 +35,34 @@ module JobDollars
   # JAVAGRAD_IN_JOB_DOLLARS = market_work_in_job_dollars(0.0, JOB_DATA["java-swing"])
 
   def job_dollar_output
-    str = 'stack,senior,mid,expert jr,junior' + "\n"
+    str =  'Stack,Impact - Senior (7.5 years),Jobs - Senior,Avg. Salary - Senior (7.5 years),Chance of Hire - Senior (7.5 years),'
+    str +=       'Impact - Mid (3.5 years),Jobs - Mid,Avg. Salary - Mid,Chance of Hire - Mid (3.5 years),'
+    str +=       'Impact - Junior (0.25 year),Jobs - Junior (0.25 year),Avg. Salary - Junior (0.25 year),Chance of Hire - Junior (0.25 year),'
+    str +=       'Impact - New (0 years),Jobs - Entry Level,Avg. Salary - New (0 years),Chance of Hire - New (0 years)' + "\n"
 
     sorted_job_data = JOB_DATA.each_pair.sort { |k, v| k[1]["resumes"].to_i <=> v[1]["resumes"].to_i }
-    sorted_job_data.each do |k, v|
-      next unless ["senior", "mid", "entry"].all? { |g| v["salaries"].has_key?(g) }
-      str += "#{k},#{[0, 2.0, 4.0, 7.5].reverse.map { |n| (market_work_in_job_dollars(n, v).to_f / 1000).to_s }.join(",")}"
+    sorted_job_data.each do |k, data|
+      next unless ["senior", "mid", "entry"].all? { |g| data["salaries"].has_key?(g) }
+      data = data.with_indifferent_access
+
+      puts "Crunching #{k}..."
+      str += "#{k.gsub("-developer","")},"
+      str += (available_earnable_dollars(10.0, data).to_f / MEDIAN_WAGE).to_s + ","
+      str += (data[:jobs][:senior]).to_s + ","
+      str += (average_salary_from_indeed_facets(data[:salaries][:senior], data[:jobs][:senior])).to_s + ","
+      str += (chance_of_getting_job(10.0, data[:resumes], :senior)).to_s + ","
+      str += (available_earnable_dollars(5.0, data).to_f / MEDIAN_WAGE).to_s + ","
+      str += (data[:jobs][:mid]).to_s + ","
+      str += (average_salary_from_indeed_facets(data[:salaries][:mid], data[:jobs][:mid])).to_s + ","
+      str += (chance_of_getting_job(5.0, data[:resumes], :mid)).to_s + ","
+      str += (available_earnable_dollars(0.0, data).to_f / MEDIAN_WAGE).to_s + ","
+      str += (data[:jobs][:entry]).to_s + ","
+      str += (average_salary_from_indeed_facets(data[:salaries][:entry], data[:jobs][:entry])).to_s + ","
+      str += (chance_of_getting_job(0.0, data[:resumes], :entry)).to_s + ","
+      str += (available_earnable_dollars(0, data).to_f / MEDIAN_WAGE).to_s + ","
+      str += (data[:jobs][:entry]).to_s + ","
+      str += (average_salary_from_indeed_facets(data[:salaries][:entry], data[:jobs][:entry])).to_s + ","
+      str += (chance_of_getting_job(0, data[:resumes], :entry)).to_s + ","
       str += "\n"
     end
 
@@ -91,6 +114,7 @@ module JobDollars
 
     sorted_job_data = JOB_DATA.each_pair.sort { |k, v| k[1]["resumes"].to_i <=> v[1]["resumes"].to_i }
     sorted_job_data.each do |k, v|
+      puts v
       next unless ["senior", "mid", "entry"].all? { |g| v["salaries"].has_key?(g) }
       str += ('%-20.20s' % k) + [0, 2.0, 4.0, 7.5].reverse.map { |n| '%15.2fk' % (market_work_in_job_dollars(n, v).to_f / 1000) }.join("")
       str += "\n"

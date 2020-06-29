@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ResumeRank 2020</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="sorttable.js"></script>
+<style>
+html {
+  font-family: Helvetica;
+  font-size: 14px;
+}
+table {
+  float:left;
+  border-top: 5px solid #ddc;
+  border-bottom: 5px solid #ddc;
+  margin-bottom: 16px;
+  width: 960px;
+}
+thead td {
+  border-bottom: 1px solid black;
+  border-right: 1px solid black;
+  cursor: pointer;
+}
+h2 {
+  float: right;
+  margin: 13px auto;
+  font-family: Verdana;
+  font-weight: normal;
+}
+.square {
+  height: 10px;
+  width: 10px;
+  float:left;
+  margin-right: 1px;
+  margin-bottom: 3px;
+}
+.c1 {
+  background-image: url('./c1.png');
+}
+.c2 {
+  background-image: url('./c2.png');
+}
+.c3 {
+  background-image: url('./c3.png');
+}
+.c4 {
+  background-image: url('./c4.png');
+}
+.c5 {
+  background-image: url('./c5.png');
+}
+.header {
+  text-align: left;
+  border-bottom: 5px solid #ddc;
+}
+</style>
+<link rel="icon" href="favicon.ico" />
+</head>
+<body style="max-width: 960px;margin: auto;text-align: left;">
+  <div class='header'>
+    <img src="resumerank-logo.svg">
+    <h2>National Developer Report 2020</h2>
+  </div>
+  <p>Below is a collection of technologies relevant to developers in 2020. The data is summarized visually in ratings of one to five marks.</p>
+  <p>Terms:</p>
+  <ul>
+    <li>Rank: Relative ranking by job market strength across all skill levels*.</li>
+    <li>Strength: Job market strength** for each skill level.</li>
+    <li>Jobs: Total number of job openings for each skill level.</li>
+    <li>Avg. Salary: Average salary for each skill level.</li>
+  </ul>
+ 
+<%
+  def render_squares(n) 
+    square = "<div class=\"square c#{n}\"></div>"
+    square * n + "<div style=\"clear:both\"></div>"
+  end
+  def render_impact_squares(n)
+    i = (n * 2)-1
+    square = "<div class=\"square c#{i}\"></div>"
+    square * n + "<div style=\"clear:both\"></div>"
+  end
+%>
+
+<table class='sortable'>
+  <thead>
+    <tr><td style="width:40px;">Rank</td>
+    <td>Senior</td><td style="width:66px;">Strength</td><td style="width:60px;">Jobs</td><td style="width:60px;">Salary</td>
+    <td>Mid</td><td style="width:60px;">Strength</td><td style="width:60px;">Jobs</td><td style="width:60px;">Salary</td>
+    <td>Junior</td><td style="width:60px;">Strength</td><td style="width:60px;">Jobs</td><td style="width:60px;">Salary</td></tr>
+  </thead>
+  <tbody>
+    <% @rows.each_with_index do |row, ix| %>
+      <tr>
+        <td>
+          <%= ix+1 %>
+        </td>
+        <td>
+          <%= row["Stack"] %>
+        </td>
+        <td title="<%= number_with_precision(row["Impact - Senior (7.5 years)"], delimiter: ',', precision: 2) %> job-wages" sorttable_customkey="<%= row["Impact - Senior (7.5 years)"] %>">
+          <%= render_squares(row["Impact Category (Senior)"].to_i) %>
+        </td>
+        <td title="<%= number_with_delimiter(row["Jobs - Senior"].to_i) %> jobs" sorttable_customkey="<%= row["Jobs - Senior"] %>">
+          <%= render_squares(row["Log Jobs (Senior)"].to_i) %>
+        </td>
+        <td title="<%= number_to_currency(row["Avg. Salary - Senior (7.5 years)"].to_f) %>" sorttable_customkey="<%= row["Avg. Salary - Senior (7.5 years)"] %>">
+          <%= render_squares(row["Salary Category (Senior)"].to_i) %>
+        </td>
+        <td>
+          <%= row["Stack"] %>
+        </td>
+        <td title="<%= number_with_precision(row["Impact - Mid (3.5 years)"], delimiter: ',', precision: 2) %> job-wages" sorttable_customkey="<%= row["Impact - Mid (3.5 years)"] %>">
+          <%= render_squares(row["Impact Category (Mid)"].to_i) %>
+        </td>
+        <td title="<%= number_with_delimiter(row["Jobs - Mid"].to_i) %> jobs" sorttable_customkey="<%= row["Jobs - Mid"] %>">
+          <%= render_squares(row["Log Jobs (Mid)"].to_i) %>
+        </td>
+        <td title="<%= number_to_currency(row["Avg. Salary - Mid"].to_f) %>" sorttable_customkey="<%= row["Avg. Salary - Mid"] %>">
+          <%= render_squares(row["Salary Category (Mid)"].to_i) %>
+        </td>
+        <td>
+          <%= row["Stack"] %>
+        </td>
+        <td title="<%= number_with_precision(row["Impact - Junior (0.25 year)"], delimiter: ',', precision: 2) %> job-wages" sorttable_customkey="<%= row["Impact - Junior (0.25 year)"] %>">
+          <%= render_squares(row["Impact Category (Junior)"].to_i) %>
+        </td>
+        <td title="<%= number_with_delimiter(row["Jobs - Junior (0.25 year)"].to_i) %> jobs" sorttable_customkey="<%= row["Jobs - Junior (0.25 year)"] %>">
+          <%= render_squares(row["Log Jobs (Entry)"].to_i) %>
+        </td>
+        <td title="<%= number_to_currency(row["Avg. Salary - Junior (0.25 year)"].to_f) %>" sorttable_customkey="<%= row["Avg. Salary - Junior (0.25 year)"] %>">
+          <%= render_squares(row["Salary Category (Entry)"].to_i) %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<p>*ResumeRank is calculated by ranking the relative strength of each technology across all 3 skill level categories, and computing the sum of these 3 rankings. Entry level, mid level, and senior level are given equal weight in this calculation.</p>
+<p>**Job market strength is assessed by taking the product of job count and expected earnings (which is salary multipied by one's chance of getting hired given the total number competing candidates). It is represented in the somewhat arbitrary unit of "job-wages," or the market strength required to produce one full-time job at the median wage in the USA (pulled from the Bureau of Labor Statistics data).</p>
+<p>Copyright © 2020 Tyler Boyd</p>
+
+</body>
+</html> 
